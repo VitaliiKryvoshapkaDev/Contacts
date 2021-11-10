@@ -11,27 +11,41 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        //Load Contacts
+        loadContacts()
+        
     }
     
+    private var contacts = [ContactProtocol]()
     
+    private func loadContacts(){
+        contacts.append(Contact(title: "Vitalii Kryvoshapka", phone: "+380633276783"))
+        contacts.append(Contact(title: "Alissa Mironenko", phone: "+380934141696"))
+        contacts.append(Contact(title: "Arthem Novytsky", phone: "+3804853290"))
+        
+        //Alphabet sort
+        contacts.sort{ $0.title < $1.title}
+    }
 }
+
 
 
 //MARK: - Protocols -
 
 //MARK: - Extensions -
-
+//Extension for Data Source
 extension ViewController: UITableViewDataSource{
     //Return all rows in table
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 50
+        return contacts.count
     }
     
     //Configure cell
     private func configure(cell: inout UITableViewCell, for indexPath: IndexPath){
         var configuration = cell.defaultContentConfiguration()
-        configuration.text = "Row \(indexPath.row)"
+        configuration.text = contacts[indexPath.row].title
+        configuration.secondaryText = contacts[indexPath.row].phone
         cell.contentConfiguration = configuration
     }
     
@@ -51,4 +65,24 @@ extension ViewController: UITableViewDataSource{
         configure(cell: &cell, for: indexPath)
         return cell
     }
+}
+
+//Extension for swipe delet (Delegate)
+
+extension ViewController: UITableViewDelegate{
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        //Delete action
+        let actionDelete = UIContextualAction(style: .destructive, title: "Delete?") { _, _, _ in
+            //Delete contact
+            self.contacts.remove(at: indexPath.row)
+            //Reload tableView
+            tableView.reloadData()
+        }
+        
+        // Exempliar  (Avalible Action)
+        let actions = UISwipeActionsConfiguration(actions: [actionDelete])
+        return actions
+    }
+    
 }
