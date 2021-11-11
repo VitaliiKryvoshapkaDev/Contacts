@@ -13,11 +13,12 @@ class ViewController: UIViewController {
     
     @IBOutlet var tableView: UITableView!
     
-    
-    
     //MARK: - App lifeCycle -
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //UserDefaults load
+        storage = ContactStorage()
         
         //Load Contacts
         loadContacts()
@@ -27,17 +28,23 @@ class ViewController: UIViewController {
     private var contacts: [ContactProtocol] = []{
         didSet{
             contacts.sort{ $0.title < $1.title}
+            
+            //userDafaults Observer
+            //Save contact to UserDefaults
+            storage.save(contacts: contacts)
         }
     }
     
     private func loadContacts(){
-        contacts.append(Contact(title: "Vitalii Kryvoshapka", phone: "+380633276783"))
-        contacts.append(Contact(title: "Alissa Mironenko", phone: "+380934141696"))
-        contacts.append(Contact(title: "Arthem Novytsky", phone: "+3804853290"))
-        
+        contacts = storage.load()
         //Alphabet sort
         //contacts.sort{ $0.title < $1.title}
     }
+    
+    //MARK: -USER DEFAULTS-
+    
+    var storage: ContactStorageProtocol!
+    
     
     //MARK: - Actions -
     //Alert Action
